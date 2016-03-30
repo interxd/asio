@@ -38,6 +38,6 @@ int main()
 	socket_ptr sock(new ip::tcp::socket(service));
 
 	start_accept(sock);
-
+	service.run();
 	return 0;
 }
