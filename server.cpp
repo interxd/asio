@@ -5,25 +5,35 @@ using namespace boost::asio;
 
 typedef boost::shared_ptr<ip::tcp::socket> socket_ptr;
 
-void client_session(socket_ptr sock) 
+io_service service;
+ip::tcp::endpoint ep( ip::tcp::v4(), 2001); // listen on 2001
+ip::tcp::acceptor acc(service, ep);
+
+void start_accept(socket_ptr sock)
 {
-    while ( true) {
-        char data[512];
-        size_t len = sock->read_some(buffer(data));
-        if ( len > 0)
-            write(*sock, buffer("ok", 2));
-    }
+	acc.async_accept(*sock, boost::bind( handle_accept, sock, _1) );
 }
+
+
+void handle_accept(socket_ptr sock, const boost::system::error_code &err) 
+{
+    if ( err) return;
+    // 从这里开始, 你可以从socket读取或者写入
+
+    printf("new connect in\n");
+
+    socket_ptr sock(new ip::tcp::socket(service));
+    start_accept(sock);
+}
+
+
 
 int main()
 {	
-	io_service service;
-	ip::tcp::endpoint ep( ip::tcp::v4(), 2001); // listen on 2001
-	ip::tcp::acceptor acc(service, ep);
-	while ( true) {
-	    socket_ptr sock(new ip::tcp::socket(service));
-	    acc.accept(*sock);
-	    boost::thread( boost::bind(client_session, sock));
-	}
 	
+	socket_ptr sock(new ip::tcp::socket(service));
+
+	start_accept(sock);
+
+	return 0;
 }
