@@ -18,8 +18,8 @@ void handle_accept(socket_ptr sock, const boost::system::error_code &err)
 
     printf("new connect in\n");
 
-    socket_ptr sock(new ip::tcp::socket(service));
-    start_accept(sock);
+    socket_ptr newsock(new ip::tcp::socket(service));
+    start_accept(newsock);
 }
 
 
