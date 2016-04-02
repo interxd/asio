@@ -7,13 +7,13 @@
 
 #define LISTEN_PORT (2001)
 
-class Server: 
+class server: 
 		public boost::enable_shared_from_this<server>,
 		private boost::noncopyable
 {
 public:
-	Server(boost::asio::io_service& io_service);
-	~Server();
+	server(boost::asio::io_service& io_service);
+	~server();
 
 	void start();
 	void stop();

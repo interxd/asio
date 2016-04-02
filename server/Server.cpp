@@ -1,7 +1,7 @@
-#include "Server.hpp"
-#include "Connection.hpp"
+#include "server.hpp"
+#include "connection.hpp"
 
-Server::Server(boost::asio::io_service& io_service):
+server::Server(boost::asio::io_service& io_service):
 	io_service_(io_service),
 	acceptor_(io_service_),
 	new_connection_(new Connection(io_service_))
@@ -10,12 +10,12 @@ Server::Server(boost::asio::io_service& io_service):
 
 }
 
-Server::~Server()
+server::~Server()
 {
 
 }
 
-Server::start()
+server::start()
 {
 	boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), LISTEN_PORT);
 
@@ -38,7 +38,7 @@ Server::start()
 	status_ = 1;
 }
 
-Server::handle_accept(const boost::system::error_code& err)
+server::handle_accept(const boost::system::error_code& err)
 {
 	printf("new client int\n");
 	if (err)
@@ -47,10 +47,27 @@ Server::handle_accept(const boost::system::error_code& err)
 		return;
 	}
 
-	new_connection_ = connection_ptr(new )
+	new_connection_->start()
+	new_connection_.reset(new connection(io_service_));
+	//new_connection_->set_buffer_size(64 * 1024);
+	
+	acceptor_.async_accept(
+		new_connection_.socket(),
+		std::bind(
+			&server::handle_accept,
+			shared_from_this(),
+			boost::asio::placeholders::error
+			)
+		);
 }
 
-Server::stop()
+server::stop()
 {
 	status_ = 2;
 }
+
+
+
+
+
+
